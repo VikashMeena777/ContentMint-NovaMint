@@ -44,18 +44,30 @@ export async function GET(req: NextRequest) {
 
       if (cfOrder.order_status === "PAID") {
         // Update our records (webhook might not have fired yet)
-        await supabase
+        const { error: orderErr } = await supabase
           .from("orders")
           .update({ status: "paid" })
           .eq("cashfree_order_id", orderId);
 
-        await supabase
+        if (orderErr) {
+          console.error("❌ Verify: order update failed:", orderErr);
+        }
+
+        const { error: profileErr } = await supabase
           .from("profiles")
           .update({
             plan: order.plan,
             updated_at: new Date().toISOString(),
           })
           .eq("id", user.id);
+
+        if (profileErr) {
+          console.error("❌ Verify: plan upgrade failed:", profileErr);
+          return NextResponse.json(
+            { error: "Plan upgrade failed", details: profileErr.message },
+            { status: 500 }
+          );
+        }
 
         return NextResponse.json({ status: "paid", plan: order.plan });
       }
