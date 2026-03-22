@@ -113,12 +113,12 @@ export default function ContactPage() {
           <div className="glass-card p-6 text-center">
             <Mail className="w-6 h-6 text-accent mx-auto mb-3" />
             <h3 className="font-semibold text-text-primary mb-1">Email</h3>
-            <p className="text-text-secondary text-sm">hello@contentmint.ai</p>
+            <p className="text-text-secondary text-sm">[ContentMintApp@gamil.com]</p>
           </div>
           <div className="glass-card p-6 text-center">
             <MessageSquare className="w-6 h-6 text-spark mx-auto mb-3" />
             <h3 className="font-semibold text-text-primary mb-1">Social</h3>
-            <p className="text-text-secondary text-sm">@contentmint on X</p>
+            <p className="text-text-secondary text-sm">@contentmint on IG</p>
           </div>
         </div>
       </main>
