@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContentMint — Generate Viral Content Instantly</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050508;
+      --surface: #0d0d14;
+      --accent1: #ff3cac;
+      --accent2: #00f5d4;
+      --accent3: #ffe600;
+      --text: #f0eeff;
+      --muted: #7a7a99;
+      --glow1: rgba(255, 60, 172, 0.35);
+      --glow2: rgba(0, 245, 212, 0.25);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 12px;
+      height: 12px;
+      background: var(--accent1);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, background 0.2s;
+      mix-blend-mode: screen;
+    }
+
+    .cursor-ring {
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--accent2);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.18s ease;
+      mix-blend-mode: screen;
+    }
+
+    /* BG noise grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 40px 20px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite alternate;
+    }
+
+    .orb1 {
+      width: 500px;
+      height: 500px;
+      background: var(--glow1);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb2 {
+      width: 400px;
+      height: 400px;
+      background: var(--glow2);
+      bottom: -80px;
+      right: -80px;
+      animation-delay: 2s;
+    }
+
+    .orb3 {
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 230, 0, 0.12);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: 4s;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.6;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1.12);
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 60, 172, 0.12);
+      border: 1px solid rgba(255, 60, 172, 0.4);
+      color: var(--accent1);
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .badge::before {
+      content: '●';
+      font-size: 8px;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.2
+      }
+    }
+
+    .hero-title {
+      font-size: clamp(42px, 6.5vw, 80px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+
+    .hero-title .line1 {
+      display: block;
+      color: var(--text);
+    }
+
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite, fadeUp 0.9s 0.2s ease both;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0%
+      }
+
+      100% {
+        background-position: 200%
+      }
+    }
+
+    .hero-sub {
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      animation: fadeUp 0.9s 0.3s ease both;
+      font-weight: 400;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.9s 0.4s ease both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent1), #7928ca);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 30px var(--glow1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 0 50px var(--glow1);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover::after {
+      opacity: 1;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(240, 238, 255, 0.2);
+      padding: 14px 32px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: none;
+      letter-spacing: 0.5px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent2);
+      background: rgba(0, 245, 212, 0.06);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* TICKER */
+    .ticker-wrap {
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      padding: 12px 0;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+      margin: 0;
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      animation: tickerMove 18s linear infinite;
+      white-space: nowrap;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 32px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #050508;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .ticker-item::after {
+      content: '✦';
+      font-size: 10px;
+    }
+
+    @keyframes tickerMove {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    /* FEATURES SECTION */
+    .section {
+      padding: 100px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
+      margin-bottom: 48px;
+    }
+
+    /* Content Type Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card {
+      background: var(--surface);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .card:hover {
+      background: #13131e;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:nth-child(1)::before {
+      background: var(--accent1);
+      box-shadow: 0 0 20px var(--accent1);
+    }
+
+    .card:nth-child(2)::before {
+      background: var(--accent2);
+      box-shadow: 0 0 20px var(--accent2);
+    }
+
+    .card:nth-child(3)::before {
+      background: var(--accent3);
+      box-shadow: 0 0 20px var(--accent3);
+    }
+
+    .card:nth-child(4)::before {
+      background: #a855f7;
+      box-shadow: 0 0 20px #a855f7;
+    }
+
+    .card:nth-child(5)::before {
+      background: var(--accent1);
+      box-shadow: 0 0 20px var(--accent1);
+    }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.75;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* DEMO SECTION */
+    .demo-wrap {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      overflow: hidden;
+      max-width: 900px;
+      margin: 0 auto;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 60px var(--glow1);
+    }
+
+    .demo-bar {
+      background: #0a0a10;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .demo-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .demo-dot:nth-child(1) {
+      background: #ff5f57;
+    }
+
+    .demo-dot:nth-child(2) {
+      background: #ffbd2e;
+    }
+
+    .demo-dot:nth-child(3) {
+      background: #28c840;
+    }
+
+    .demo-title-bar {
+      margin-left: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .demo-body {
+      padding: 28px 32px;
+    }
+
+    .demo-input-wrap {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      align-items: stretch;
+    }
+
+    .demo-input-inner {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .demo-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .demo-input:focus {
+      border-color: var(--accent1);
+      box-shadow: 0 0 0 3px rgba(255, 60, 172, 0.15);
+    }
+
+    .demo-input::placeholder {
+      color: transparent;
+    }
+
+    /* Typewriter placeholder — sits on top, pointer-events none */
+    .typewriter-placeholder {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      transition: opacity 0.15s;
+    }
+
+    .typewriter-placeholder.hidden {
+      opacity: 0;
+    }
+
+    /* blinking cursor inside placeholder */
+    .typewriter-placeholder::after {
+      content: '|';
+      color: var(--accent1);
+      animation: blink 0.75s step-start infinite;
+      margin-left: 1px;
+      font-weight: 400;
+    }
+
+    /* category chip before the text */
+    .tw-chip {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 60, 172, 0.15);
+      border: 1px solid rgba(255, 60, 172, 0.35);
+      color: var(--accent1);
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+      flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .demo-gen-btn {
+      background: linear-gradient(135deg, var(--accent1), #7928ca);
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .demo-gen-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 30px var(--glow1);
+    }
+
+    .demo-gen-btn.loading {
+      pointer-events: none;
+    }
+
+    .demo-gen-btn.loading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+      animation: shimmerBtn 0.9s infinite;
+    }
+
+    @keyframes shimmerBtn {
+      0% {
+        transform: translateX(-100%)
+      }
+
+      100% {
+        transform: translateX(100%)
+      }
+    }
+
+    .type-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .type-tab {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      color: var(--muted);
+      background: transparent;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .type-tab.active,
+    .type-tab:hover {
+      color: #050508;
+      border-color: transparent;
+    }
+
+    .type-tab:nth-child(1).active,
+    .type-tab:nth-child(1):hover {
+      background: var(--accent1);
+    }
+
+    .type-tab:nth-child(2).active,
+    .type-tab:nth-child(2):hover {
+      background: var(--accent2);
+    }
+
+    .type-tab:nth-child(3).active,
+    .type-tab:nth-child(3):hover {
+      background: var(--accent3);
+    }
+
+    .type-tab:nth-child(4).active,
+    .type-tab:nth-child(4):hover {
+      background: #a855f7;
+    }
+
+    .type-tab:nth-child(5).active,
+    .type-tab:nth-child(5):hover {
+      background: #3b82f6;
+    }
+
+    .output-area {
+      min-height: 220px;
+    }
+
+    .output-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      animation: itemIn 0.4s ease both;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .output-item:hover {
+      border-color: rgba(255, 60, 172, 0.4);
+      background: rgba(255, 60, 172, 0.05);
+    }
+
+    .output-item:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .output-item:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    .output-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent1), var(--accent2));
+      border-radius: 0 2px 2px 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .output-item:hover::before {
+      opacity: 1;
+    }
+
+    @keyframes itemIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .item-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--accent1);
+      min-width: 20px;
+      padding-top: 3px;
+      font-weight: 700;
+    }
+
+    .item-text {
+      font-size: 13px;
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .item-copy {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .item-copy:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .placeholder-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 220px;
+      gap: 12px;
+    }
+
+    .placeholder-icon {
+      font-size: 48px;
+      opacity: 0.3;
+    }
+
+    .placeholder-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* STATS */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin: 80px 0 0;
+    }
+
+    .stat-item {
+      background: var(--bg);
+      padding: 36px 24px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-cta {
+      padding: 90px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(255, 60, 172, 0.12) 0%, transparent 70%);
+    }
+
+    .footer-cta-title {
+      font-size: clamp(34px, 5vw, 64px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.0;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-cta-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 36px;
+      font-family: 'Space Mono', monospace;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Loading skeleton */
+    .skeleton-line {
+      height: 18px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.09) 50%, rgba(255, 255, 255, 0.04) 75%);
+      background-size: 200% 100%;
+      animation: skeleton 1.2s infinite;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .skeleton-line:nth-child(2) {
+      width: 80%;
+      animation-delay: 0.1s;
+    }
+
+    .skeleton-line:nth-child(3) {
+      width: 90%;
+      animation-delay: 0.2s;
+    }
+
+    @keyframes skeleton {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+
+    <div class="badge">ContentMint — AI Content Engine</div>
+
+    <h1 class="hero-title">
+      <span class="line1">Stop Staring.</span>
+      <span class="line2">Start Going Viral.</span>
+    </h1>
+
+    <p class="hero-sub">Generate irresistible hooks, captions, CTAs, titles, and ideas in seconds. Built for creators
+      who can't afford to be forgettable.</p>
+
+    <div class="hero-cta">
+      <button class="btn-primary">Generate Free ⚡</button>
+      <button class="btn-ghost">See It In Action →</button>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="ticker">
+      <span class="ticker-item">Viral Hooks</span>
+      <span class="ticker-item">Scroll-Stopping Captions</span>
+      <span class="ticker-item">High-Convert CTAs</span>
+      <span class="ticker-item">Magnetic Titles</span>
+      <span class="ticker-item">Content Ideas</span>
+      <span class="ticker-item">Viral Hooks</span>
+      <span class="ticker-item">Scroll-Stopping Captions</span>
+      <span class="ticker-item">High-Convert CTAs</span>
+      <span class="ticker-item">Magnetic Titles</span>
+      <span class="ticker-item">Content Ideas</span>
+      <span class="ticker-item">Viral Hooks</span>
+      <span class="ticker-item">Scroll-Stopping Captions</span>
+      <span class="ticker-item">High-Convert CTAs</span>
+      <span class="ticker-item">Magnetic Titles</span>
+      <span class="ticker-item">Content Ideas</span>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section">
+    <p class="section-label">What We Generate</p>
+    <h2 class="section-title">Five weapons.<br>One prompt.</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">🎣</span>
+        <div class="card-title">Viral Hooks</div>
+        <p class="card-desc">First-line psychology that stops the scroll dead. Pattern interrupts, curiosity gaps, and
+          bold claims that pull readers in.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">✍️</span>
+        <div class="card-title">Captions</div>
+        <p class="card-desc">Platform-native copy for Instagram, TikTok, LinkedIn, and X. Tone-matched, emoji-ready,
+          engagement-optimized.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🚀</span>
+        <div class="card-title">CTAs</div>
+        <p class="card-desc">Action-triggering calls that convert. Urgency, scarcity, desire — baked into every line.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📰</span>
+        <div class="card-title">Titles</div>
+        <p class="card-desc">Click-magnet headlines for blogs, videos, and reels. SEO-aware and curiosity-driven.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">💡</span>
+        <div class="card-title">Content Ideas</div>
+        <p class="card-desc">Never stare at a blank page again. Get 10+ trending ideas tailored to your niche in one
+          click.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEMO -->
+  <div class="section" style="padding-top:0">
+    <p class="section-label">Live Demo</p>
+    <h2 class="section-title" style="margin-bottom:40px">Try it right now.</h2>
+
+    <div class="demo-wrap">
+      <div class="demo-bar">
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-title-bar">ContentMint — generator</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-input-wrap">
+          <div class="demo-input-inner">
+            <input class="demo-input" id="topicInput" type="text" placeholder="" />
+            <span class="typewriter-placeholder" id="typePlaceholder"></span>
+          </div>
+          <button class="demo-gen-btn" id="genBtn" onclick="generateContent()">Generate ⚡</button>
+        </div>
+        <div class="type-tabs">
+          <button class="type-tab active" onclick="switchTab(this,'hooks')">🎣 Hooks</button>
+          <button class="type-tab" onclick="switchTab(this,'captions')">✍️ Captions</button>
+          <button class="type-tab" onclick="switchTab(this,'ctas')">🚀 CTAs</button>
+          <button class="type-tab" onclick="switchTab(this,'titles')">📰 Titles</button>
+          <button class="type-tab" onclick="switchTab(this,'ideas')">💡 Ideas</button>
+        </div>
+        <div class="output-area" id="outputArea">
+          <div class="placeholder-state">
+            <div class="placeholder-icon">✨</div>
+            <div class="placeholder-text">Enter a topic and hit Generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div style="max-width:1200px;margin:0 auto;padding:0 20px;">
+    <div class="stats-strip">
+      <div class="stat-item"><span class="stat-num">50K+</span><span class="stat-label">Creators Using It</span></div>
+      <div class="stat-item"><span class="stat-num">2M+</span><span class="stat-label">Pieces Generated</span></div>
+      <div class="stat-item"><span class="stat-num">3 sec</span><span class="stat-label">Avg. Gen Time</span></div>
+      <div class="stat-item"><span class="stat-num">10×</span><span class="stat-label">Faster Than Manual</span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div class="footer-cta">
+    <h2 class="footer-cta-title">Your next viral post<br>is one click away.</h2>
+    <p class="footer-cta-sub">No credit card. No learning curve. Just results.</p>
+    <button class="btn-primary" style="font-size:14px;padding:14px 40px;position:relative;z-index:1;">Start Generating
+      Free →</button>
+  </div>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+    (function animRing() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    // Tab state
+    let currentType = 'hooks';
+    let lastResults = {};
+
+    function switchTab(el, type) {
+      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      currentType = type;
+      if (lastResults[type]) renderResults(lastResults[type]);
+      else if (Object.keys(lastResults).length) {
+        document.getElementById('outputArea').innerHTML = `<div class="placeholder-state"><div class="placeholder-icon">🔄</div><div class="placeholder-text">Generate to see ${type}</div></div>`;
+      }
+    }
+
+    async function generateContent() {
+      const topic = document.getElementById('topicInput').value.trim();
+      if (!topic) { document.getElementById('topicInput').focus(); return; }
+
+      const btn = document.getElementById('genBtn');
+      btn.textContent = 'Generating…';
+      btn.classList.add('loading');
+
+      // Show skeleton
+      document.getElementById('outputArea').innerHTML = `
+      <div style="padding:8px 0">
+        <div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>
+        <div class="skeleton-line" style="margin-top:20px"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>
+        <div class="skeleton-line" style="margin-top:20px"></div><div class="skeleton-line"></div><div class="skeleton-line"></div>
+      </div>`;
+
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{
+              role: 'user',
+              content: `You are a world-class viral content strategist. For the topic: "${topic}", generate the following. Respond ONLY with a valid JSON object, no markdown, no extra text.
+
+{
+  "hooks": ["hook1","hook2","hook3"],
+  "captions": ["caption1","caption2","caption3"],
+  "ctas": ["cta1","cta2","cta3"],
+  "titles": ["title1","title2","title3"],
+  "ideas": ["idea1","idea2","idea3"]
+}
+
+Make each one punchy, scroll-stopping, and genuinely viral-worthy. Hooks should use pattern interrupts or bold statements. Captions should be platform-native. CTAs should create urgency. Titles should be curiosity-driven. Ideas should be trending and specific.`
+            }]
+          })
+        });
+
+        const data = await res.json();
+        const text = data.content.map(i => i.text || '').join('');
+        const clean = text.replace(/```json|```/g, '').trim();
+        lastResults = JSON.parse(clean);
+        renderResults(lastResults[currentType]);
+      } catch (e) {
+        document.getElementById('outputArea').innerHTML = `<div class="placeholder-state"><div class="placeholder-icon">⚠️</div><div class="placeholder-text">Something went wrong. Try again.</div></div>`;
+      }
+
+      btn.textContent = 'Generate ⚡';
+      btn.classList.remove('loading');
+    }
+
+    function renderResults(items) {
+      if (!items || !items.length) return;
+      document.getElementById('outputArea').innerHTML = items.map((item, i) => `
+      <div class="output-item" onclick="copyItem(this, '${item.replace(/'/g, "\\'")}')">
+        <span class="item-num">0${i + 1}</span>
+        <span class="item-text">${item}</span>
+        <button class="item-copy">Copy</button>
+      </div>
+    `).join('');
+    }
+
+    function copyItem(el, text) {
+      navigator.clipboard.writeText(text).catch(() => { });
+      const btn = el.querySelector('.item-copy');
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = 'var(--accent2)';
+      btn.style.borderColor = 'var(--accent2)';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1500);
+    }
+
+    // Enter key
+    document.getElementById('topicInput').addEventListener('keydown', e => { if (e.key === 'Enter') generateContent(); });
+
+    // ── Typewriter placeholder ──────────────────────────────────────────
+    const twDemos = [
+      { chip: 'fitness', text: 'morning workout routine for busy moms', chipColor: '#00f5d4', chipBg: 'rgba(0,245,212,0.12)', chipBorder: 'rgba(0,245,212,0.35)' },
+      { chip: 'saas', text: 'AI writing tool for content creators', chipColor: '#a855f7', chipBg: 'rgba(168,85,247,0.12)', chipBorder: 'rgba(168,85,247,0.35)' },
+      { chip: 'ecomm', text: 'sustainable skincare brand launch', chipColor: '#ffe600', chipBg: 'rgba(255,230,0,0.12)', chipBorder: 'rgba(255,230,0,0.35)' },
+      { chip: 'finance', text: 'passive income strategies for Gen Z', chipColor: '#ff3cac', chipBg: 'rgba(255,60,172,0.12)', chipBorder: 'rgba(255,60,172,0.35)' },
+      { chip: 'creator', text: 'growing a YouTube channel from 0 to 100K', chipColor: '#3b82f6', chipBg: 'rgba(59,130,246,0.12)', chipBorder: 'rgba(59,130,246,0.35)' },
+    ];
+
+    const twEl = document.getElementById('typePlaceholder');
+    const input = document.getElementById('topicInput');
+
+    let twIndex = 0;   // which demo we're on
+    let twChar = 0;   // current char position
+    let twPhase = 'typing'; // 'typing' | 'pause' | 'deleting'
+    let twTimer = null;
+    let twPaused = false;
+
+    const SPEED_TYPE = 55;   // ms per char while typing
+    const SPEED_DELETE = 28;   // ms per char while deleting
+    const PAUSE_END = 1600; // pause after fully typed
+    const PAUSE_START = 300;  // tiny pause before typing next
+
+    function twSetChip(demo) {
+      // Remove old chip if any
+      const old = twEl.querySelector('.tw-chip');
+      if (old) old.remove();
+      const chip = document.createElement('span');
+      chip.className = 'tw-chip';
+      chip.textContent = demo.chip;
+      chip.style.color = demo.chipColor;
+      chip.style.background = demo.chipBg;
+      chip.style.borderColor = demo.chipBorder;
+      twEl.insertBefore(chip, twEl.firstChild);
+    }
+
+    // The text span lives after the chip
+    function twGetTextSpan() {
+      let span = twEl.querySelector('.tw-text');
+      if (!span) {
+        span = document.createElement('span');
+        span.className = 'tw-text';
+        twEl.appendChild(span);
+      }
+      return span;
+    }
+
+    function twStep() {
+      if (twPaused) return;
+      const demo = twDemos[twIndex];
+      const span = twGetTextSpan();
+
+      if (twPhase === 'typing') {
+        twChar++;
+        span.textContent = demo.text.slice(0, twChar);
+        if (twChar >= demo.text.length) {
+          twPhase = 'pause';
+          twTimer = setTimeout(twStep, PAUSE_END);
+        } else {
+          twTimer = setTimeout(twStep, SPEED_TYPE);
+        }
+      } else if (twPhase === 'pause') {
+        twPhase = 'deleting';
+        twTimer = setTimeout(twStep, SPEED_DELETE);
+      } else if (twPhase === 'deleting') {
+        twChar--;
+        span.textContent = demo.text.slice(0, twChar);
+        if (twChar <= 0) {
+          twIndex = (twIndex + 1) % twDemos.length;
+          twPhase = 'typing';
+          twSetChip(twDemos[twIndex]);
+          twTimer = setTimeout(twStep, PAUSE_START);
+        } else {
+          twTimer = setTimeout(twStep, SPEED_DELETE);
+        }
+      }
+    }
+
+    function twStart() {
+      clearTimeout(twTimer);
+      twIndex = 0; twChar = 0; twPhase = 'typing'; twPaused = false;
+      twEl.classList.remove('hidden');
+      twSetChip(twDemos[0]);
+      twGetTextSpan().textContent = '';
+      twTimer = setTimeout(twStep, 500);
+    }
+
+    // Pause typewriter when user starts typing, resume when cleared
+    input.addEventListener('input', () => {
+      if (input.value.length > 0) {
+        twPaused = true;
+        clearTimeout(twTimer);
+        twEl.classList.add('hidden');
+      } else {
+        twStart();
+      }
+    });
+
+    // Also pause on focus if there's already text, hide placeholder
+    input.addEventListener('focus', () => {
+      if (input.value.length > 0) {
+        twEl.classList.add('hidden');
+      }
+    });
+
+    // Kick it off
+    twStart();
+  </script>
+</body>
+
+</html>

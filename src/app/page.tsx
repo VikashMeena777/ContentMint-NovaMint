@@ -1,518 +1,396 @@
-import Navbar from "@/components/Navbar";
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
 import Footer from "@/components/Footer";
-import Link from "next/link";
-import {
-  Sparkles,
-  Zap,
-  MessageSquare,
-  Target,
-  Type,
-  Lightbulb,
-  ArrowRight,
-  Check,
-  Star,
-  Copy,
-  Crown,
-  ChevronRight,
-} from "lucide-react";
+import styles from "./page.module.css";
 
-/* ========================================
-   HERO SECTION
-   ======================================== */
-function HeroSection() {
-  return (
-    <section className="aurora-bg relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden">
-      {/* Floating orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[hsl(var(--accent)/0.06)] blur-[120px] animate-float pointer-events-none" />
-      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-[hsl(var(--spark)/0.04)] blur-[100px] animate-float delay-300 pointer-events-none" />
+/* ── Typewriter demo data ── */
+const twDemos = [
+  { chip: "fitness", text: "morning workout routine for busy moms", chipColor: "#00f5d4", chipBg: "rgba(0,245,212,0.12)", chipBorder: "rgba(0,245,212,0.35)" },
+  { chip: "saas", text: "AI writing tool for content creators", chipColor: "#a855f7", chipBg: "rgba(168,85,247,0.12)", chipBorder: "rgba(168,85,247,0.35)" },
+  { chip: "ecomm", text: "sustainable skincare brand launch", chipColor: "#ffe600", chipBg: "rgba(255,230,0,0.12)", chipBorder: "rgba(255,230,0,0.35)" },
+  { chip: "finance", text: "passive income strategies for Gen Z", chipColor: "#ff3cac", chipBg: "rgba(255,60,172,0.12)", chipBorder: "rgba(255,60,172,0.35)" },
+  { chip: "creator", text: "growing a YouTube channel from 0 to 100K", chipColor: "#3b82f6", chipBg: "rgba(59,130,246,0.12)", chipBorder: "rgba(59,130,246,0.35)" },
+];
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-[hsl(var(--accent)/0.2)] bg-[hsl(var(--accent)/0.06)] animate-fade-up">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[hsl(var(--accent))] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[hsl(var(--accent))]" />
-          </span>
-          <span className="text-sm font-medium text-[hsl(var(--accent))]">
-            AI-Powered Content Generation
-          </span>
-        </div>
+const CONTENT_TYPES = ["hooks", "captions", "ctas", "titles", "ideas"] as const;
+type ContentType = (typeof CONTENT_TYPES)[number];
 
-        {/* Heading */}
-        <h1 className="font-display font-bold text-5xl sm:text-6xl lg:text-[4.5rem] text-text-primary leading-[1.08] mb-6 animate-fade-up delay-100 fade-target">
-          AI Content That
-          <br />
-          <span className="gradient-text">Converts.</span>
-        </h1>
+const TAB_META: Record<ContentType, { emoji: string; label: string }> = {
+  hooks: { emoji: "🎣", label: "Hooks" },
+  captions: { emoji: "✍️", label: "Captions" },
+  ctas: { emoji: "🚀", label: "CTAs" },
+  titles: { emoji: "📰", label: "Titles" },
+  ideas: { emoji: "💡", label: "Ideas" },
+};
 
-        {/* Subhead */}
-        <p className="text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-up delay-200 fade-target">
-          Generate viral hooks, captions & CTAs in seconds — not hours.
-          <br className="hidden sm:block" />
-          Built for creators, marketers & founders who move fast.
-        </p>
+const FEATURES = [
+  { icon: "🎣", title: "Viral Hooks", desc: "First-line psychology that stops the scroll dead. Pattern interrupts, curiosity gaps, and bold claims that pull readers in." },
+  { icon: "✍️", title: "Captions", desc: "Platform-native copy for Instagram, TikTok, LinkedIn, and X. Tone-matched, emoji-ready, engagement-optimized." },
+  { icon: "🚀", title: "CTAs", desc: "Action-triggering calls that convert. Urgency, scarcity, desire — baked into every line." },
+  { icon: "📰", title: "Titles", desc: "Click-magnet headlines for blogs, videos, and reels. SEO-aware and curiosity-driven." },
+  { icon: "💡", title: "Content Ideas", desc: "Never stare at a blank page again. Get 10+ trending ideas tailored to your niche in one click." },
+];
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up delay-300 fade-target">
-          <Link href="/login" className="btn-primary-lg">
-            <Sparkles className="w-5 h-5" />
-            Start Free — No Card Needed
-          </Link>
-          <a href="#features" className="btn-secondary text-base py-3.5 px-8">
-            See How It Works
-            <ArrowRight className="w-4 h-4" />
-          </a>
-        </div>
+const STATS = [
+  { num: "50K+", label: "Creators Using It" },
+  { num: "2M+", label: "Pieces Generated" },
+  { num: "3 sec", label: "Avg. Gen Time" },
+  { num: "10×", label: "Faster Than Manual" },
+];
 
-        {/* Social Proof */}
-        <div className="mt-16 animate-fade-up delay-500 fade-target">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4 font-medium">
-            Trusted by 500+ creators & marketers
-          </p>
-          <div className="flex items-center justify-center gap-1.5">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className="w-4 h-4 fill-[hsl(var(--warning))] text-[hsl(var(--warning))]"
-              />
-            ))}
-            <span className="text-sm text-text-secondary ml-2.5">
-              4.9/5 — &quot;Saves me 3 hours daily&quot;
-            </span>
-          </div>
-        </div>
+const TICKER_ITEMS = [
+  "Viral Hooks", "Scroll-Stopping Captions", "High-Convert CTAs",
+  "Magnetic Titles", "Content Ideas",
+];
 
-        {/* Preview Cards */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto animate-fade-up delay-600 fade-target">
-          <PreviewCard
-            icon={<Zap className="w-5 h-5 text-[hsl(var(--accent))]" />}
-            label="Viral Hook"
-            text="&ldquo;Stop scrolling. This ONE strategy grew my account from 0 to 100K in 90 days.&rdquo;"
-            score="9.2"
-            accent="accent"
-          />
-          <PreviewCard
-            icon={<MessageSquare className="w-5 h-5 text-[hsl(var(--spark))]" />}
-            label="Caption"
-            text="&ldquo;Your content isn&apos;t bad. Your hooks are. Here&apos;s the fix... 🧵&rdquo;"
-            score="8.8"
-            accent="spark"
-          />
-          <PreviewCard
-            icon={<Target className="w-5 h-5 text-[hsl(var(--success))]" />}
-            label="CTA"
-            text="&ldquo;Join 10,000+ creators getting viral hooks weekly → Free to start.&rdquo;"
-            score="9.5"
-            accent="success"
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
+export default function Home() {
+  /* ── State ── */
+  const [topic, setTopic] = useState("");
+  const [currentType, setCurrentType] = useState<ContentType>("hooks");
+  const [results, setResults] = useState<Record<string, string[]>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-function PreviewCard({
-  icon,
-  label,
-  text,
-  score,
-  accent,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  text: string;
-  score: string;
-  accent: string;
-}) {
-  return (
-    <div className="glass-card p-5 text-left group cursor-default hover:translate-y-[-2px] transition-transform duration-300">
-      <div className="flex items-center gap-2 mb-3">
-        {icon}
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-          {label}
-        </span>
-        <span className={`ml-auto badge badge-${accent === "accent" ? "accent" : accent === "spark" ? "spark" : "success"} text-[0.65rem]`}>
-          {score}/10
-        </span>
-      </div>
-      <p
-        className="text-sm text-text-primary leading-relaxed mb-4"
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
-      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <button className="text-text-muted hover:text-[hsl(var(--warning))] transition-colors p-1" aria-label="Save">
-          <Star className="w-3.5 h-3.5" />
-        </button>
-        <button className="text-text-muted hover:text-[hsl(var(--accent))] transition-colors p-1" aria-label="Copy">
-          <Copy className="w-3.5 h-3.5" />
-        </button>
-      </div>
-    </div>
-  );
-}
+  /* ── Typewriter state ── */
+  const [twText, setTwText] = useState("");
+  const [twDemoIdx, setTwDemoIdx] = useState(0);
+  const [twVisible, setTwVisible] = useState(true);
+  const twTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const twStateRef = useRef({ charIdx: 0, phase: "typing" as "typing" | "pause" | "deleting", demoIdx: 0 });
 
-/* ========================================
-   FEATURES SECTION (Bento Grid)
-   ======================================== */
-function FeaturesSection() {
-  const features = [
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: "Viral Hooks",
-      description:
-        "Pattern-matched hooks using 12 proven viral frameworks. Scroll-stopping openers that boost watch time.",
-      color: "accent",
-      span: "lg:col-span-2",
-    },
-    {
-      icon: <MessageSquare className="w-6 h-6" />,
-      title: "Smart Captions",
-      description:
-        "Platform-optimized captions with built-in CTA placement. Hashtag suggestions included.",
-      color: "spark",
-      span: "",
-    },
-    {
-      icon: <Target className="w-6 h-6" />,
-      title: "CTAs That Convert",
-      description:
-        "Action-driving calls-to-action tested across 100K+ campaigns.",
-      color: "success",
-      span: "",
-    },
-    {
-      icon: <Type className="w-6 h-6" />,
-      title: "Blog & Video Titles",
-      description:
-        "SEO-aware titles with click-through optimization. A/B test variations instantly.",
-      color: "warning",
-      span: "",
-    },
-    {
-      icon: <Lightbulb className="w-6 h-6" />,
-      title: "Content Ideas",
-      description:
-        "Never run out of ideas. AI suggests trending topics in your niche.",
-      color: "error",
-      span: "",
-    },
-  ];
+  /* ── Custom cursor ── */
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
-  const colorMap: Record<string, string> = {
-    accent: "hsl(var(--accent))",
-    spark: "hsl(var(--spark))",
-    success: "hsl(var(--success))",
-    warning: "hsl(var(--warning))",
-    error: "hsl(var(--error))",
+  useEffect(() => {
+    let rx = 0, ry = 0;
+    const onMove = (e: MouseEvent) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.left = e.clientX + "px";
+        cursorRef.current.style.top = e.clientY + "px";
+      }
+    };
+    document.addEventListener("mousemove", onMove);
+
+    let animId: number;
+    let mx = 0, my = 0;
+    const onMoveRing = (e: MouseEvent) => { mx = e.clientX; my = e.clientY; };
+    document.addEventListener("mousemove", onMoveRing);
+
+    const animRing = () => {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      if (ringRef.current) {
+        ringRef.current.style.left = rx + "px";
+        ringRef.current.style.top = ry + "px";
+      }
+      animId = requestAnimationFrame(animRing);
+    };
+    animRing();
+
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mousemove", onMoveRing);
+      cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  /* ── Typewriter effect ── */
+  const twStep = useCallback(() => {
+    const st = twStateRef.current;
+    const demo = twDemos[st.demoIdx];
+
+    if (st.phase === "typing") {
+      st.charIdx++;
+      setTwText(demo.text.slice(0, st.charIdx));
+      if (st.charIdx >= demo.text.length) {
+        st.phase = "pause";
+        twTimerRef.current = setTimeout(twStep, 1600);
+      } else {
+        twTimerRef.current = setTimeout(twStep, 55);
+      }
+    } else if (st.phase === "pause") {
+      st.phase = "deleting";
+      twTimerRef.current = setTimeout(twStep, 28);
+    } else if (st.phase === "deleting") {
+      st.charIdx--;
+      setTwText(demo.text.slice(0, st.charIdx));
+      if (st.charIdx <= 0) {
+        st.demoIdx = (st.demoIdx + 1) % twDemos.length;
+        st.phase = "typing";
+        setTwDemoIdx(st.demoIdx);
+        twTimerRef.current = setTimeout(twStep, 300);
+      } else {
+        twTimerRef.current = setTimeout(twStep, 28);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    twTimerRef.current = setTimeout(twStep, 500);
+    return () => { if (twTimerRef.current) clearTimeout(twTimerRef.current); };
+  }, [twStep]);
+
+  const handleInputChange = (val: string) => {
+    setTopic(val);
+    if (val.length > 0) {
+      setTwVisible(false);
+      if (twTimerRef.current) clearTimeout(twTimerRef.current);
+    } else {
+      setTwVisible(true);
+      twStateRef.current = { charIdx: 0, phase: "typing", demoIdx: 0 };
+      setTwDemoIdx(0);
+      setTwText("");
+      twTimerRef.current = setTimeout(twStep, 500);
+    }
   };
 
-  return (
-    <section id="features" className="py-24 px-6">
-      <div className="mx-auto max-w-7xl">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <span className="badge badge-accent mb-4 inline-flex">NEW</span>
-          <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-[2.75rem] text-text-primary mb-4 leading-tight">
-            5 Generators.{" "}
-            <span className="gradient-text">One Platform.</span>
-          </h2>
-          <p className="text-text-secondary text-lg max-w-xl mx-auto">
-            Every content type a creator needs, powered by AI that understands
-            what goes viral.
-          </p>
-        </div>
+  /* ── Generate content (landing page demo — mock data) ── */
+  const generateContent = async () => {
+    if (!topic.trim()) return;
+    setLoading(true);
+    setError("");
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className={`glass-card p-8 flex flex-col gap-4 group hover:translate-y-[-2px] transition-all duration-300 ${feature.span}`}
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{
-                  background: `${colorMap[feature.color]}1a`,
-                  color: colorMap[feature.color],
-                }}
-              >
-                {feature.icon}
-              </div>
-              <h3 className="font-display font-semibold text-xl text-text-primary">
-                {feature.title}
-              </h3>
-              <p className="text-text-secondary text-sm leading-relaxed">
-                {feature.description}
-              </p>
-              <div className="mt-auto pt-2">
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-1 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  style={{ color: colorMap[feature.color] }}
-                >
-                  Try it now <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+    // Simulate API delay for realistic feel
+    await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800));
 
-/* ========================================
-   HOW IT WORKS SECTION
-   ======================================== */
-function HowItWorksSection() {
-  const steps = [
-    {
-      num: "01",
-      title: "Enter Your Topic",
-      description:
-        "Type your topic, niche, or a rough idea. That's all the AI needs.",
-      icon: <Type className="w-5 h-5" />,
-    },
-    {
-      num: "02",
-      title: "Choose Your Style",
-      description:
-        "Select platform, tone, and content type. The AI adapts to each context.",
-      icon: <Target className="w-5 h-5" />,
-    },
-    {
-      num: "03",
-      title: "Generate & Copy",
-      description:
-        "Get 3-5 AI-generated options. Copy your favorite with one click.",
-      icon: <Copy className="w-5 h-5" />,
-    },
-  ];
-
-  return (
-    <section id="how-it-works" className="py-24 px-6 relative">
-      {/* Gradient divider */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(var(--border))] to-transparent" />
-
-      <div className="mx-auto max-w-5xl">
-        <div className="text-center mb-16">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-text-primary mb-4">
-            How It Works
-          </h2>
-          <p className="text-text-secondary text-lg">
-            Three steps. Zero learning curve.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {steps.map((step, i) => (
-            <div key={step.num} className="relative text-center sm:text-left group">
-              {/* Connection line (desktop only) */}
-              {i < steps.length - 1 && (
-                <div className="hidden sm:block absolute top-8 left-[calc(50%+2rem)] right-[-2rem] h-px bg-gradient-to-r from-[hsl(var(--accent)/0.3)] to-transparent" />
-              )}
-
-              <div className="flex items-center justify-center sm:justify-start gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-[hsl(var(--accent)/0.1)] flex items-center justify-center text-[hsl(var(--accent))] group-hover:bg-[hsl(var(--accent)/0.15)] transition-colors">
-                  {step.icon}
-                </div>
-                <span className="font-display font-bold text-xs text-text-muted uppercase tracking-widest">
-                  Step {step.num}
-                </span>
-              </div>
-              <h3 className="font-display font-semibold text-lg text-text-primary mb-2">
-                {step.title}
-              </h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                {step.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ========================================
-   PRICING SECTION
-   ======================================== */
-function PricingSection() {
-  const plans = [
-    {
-      name: "Free",
-      price: "₹0",
-      period: "forever",
-      description: "Try it out — no card required",
-      features: [
-        "10 generations / day",
-        "All 5 generators",
-        "Basic tones",
-        "Copy to clipboard",
+    const t = topic.trim();
+    setResults({
+      hooks: [
+        `I spent 30 days studying ${t} — here's what nobody tells you.`,
+        `Stop doing ${t} wrong. This one shift changes everything.`,
+        `The #1 ${t} mistake killing your results (and the fix).`,
       ],
-      cta: "Start Free",
-      popular: false,
-    },
-    {
-      name: "Pro",
-      price: "₹199",
-      period: "/month",
-      description: "For serious creators",
-      features: [
-        "100 generations / day",
-        "All 5 generators",
-        "All tones & niches",
-        "Favorites & history",
-        "Priority generation speed",
+      captions: [
+        `If you're sleeping on ${t}, wake up. 🔥 Here's why the smartest creators are already all-in → [link in bio]`,
+        `POV: You finally figured out ${t} and your engagement 3x'd overnight 📈`,
+        `"${t}? That's not for me." — You, 6 months before it changed your business. Let me explain ⬇️`,
       ],
-      cta: "Upgrade to Pro",
-      popular: true,
-    },
-    {
-      name: "Business",
-      price: "₹399",
-      period: "/month",
-      description: "For agencies & teams",
-      features: [
-        "Unlimited generations",
-        "All 5 generators",
-        "Custom brand voice",
-        "Export & analytics",
-        "Priority support",
-        "API access (soon)",
+      ctas: [
+        `Grab the free ${t} playbook before we gate it →`,
+        `DM "${t.split(" ")[0].toUpperCase()}" and I'll send you the full breakdown.`,
+        `Only 48 hours left to join the ${t} masterclass — spots are almost gone 🔒`,
       ],
-      cta: "Go Business",
-      popular: false,
-    },
-  ];
+      titles: [
+        `How ${t} Took Me From 0 to 100K Followers in 90 Days`,
+        `The Ultimate ${t} Guide (2025 Edition)`,
+        `Why ${t} Is the Most Underrated Strategy Right Now`,
+      ],
+      ideas: [
+        `Create a "Day in the Life" reel showing your ${t} workflow from start to finish`,
+        `Interview 5 experts on their #1 ${t} hot take — compile into a carousel`,
+        `Build a free ${t} calculator/checklist tool and use it as a lead magnet`,
+      ],
+    });
 
-  return (
-    <section id="pricing" className="py-24 px-6 relative">
-      {/* Gradient divider */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(var(--border))] to-transparent" />
+    setLoading(false);
+  };
 
-      <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-16">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-text-primary mb-4">
-            Simple, Transparent Pricing
-          </h2>
-          <p className="text-text-secondary text-lg">
-            Start free. Upgrade when you&apos;re ready.
-          </p>
-        </div>
+  const copyItem = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text).catch(() => {});
+    const el = document.getElementById(`copy-btn-${idx}`);
+    if (el) {
+      el.textContent = "Copied!";
+      el.style.color = "var(--accent2)";
+      el.style.borderColor = "var(--accent2)";
+      setTimeout(() => {
+        el.textContent = "Copy";
+        el.style.color = "";
+        el.style.borderColor = "";
+      }, 1500);
+    }
+  };
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative p-8 flex flex-col rounded-2xl transition-all duration-300 ${
-                plan.popular
-                  ? "glass-card-featured scale-[1.02] lg:scale-105"
-                  : "glass-card"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(265,70%,50%)] text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg shadow-[hsl(var(--accent-glow)/0.25)]">
-                    <Crown className="w-3 h-3" />
-                    Most Popular
-                  </span>
-                </div>
-              )}
+  const currentItems = results[currentType] || [];
+  const hasAnyResults = Object.keys(results).length > 0;
+  const currentDemo = twDemos[twDemoIdx];
 
-              <div className="mb-6">
-                <h3 className="font-display font-semibold text-lg text-text-primary">
-                  {plan.name}
-                </h3>
-                <p className="text-text-muted text-sm mt-1">
-                  {plan.description}
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <span className="font-display font-bold text-4xl text-text-primary">
-                  {plan.price}
-                </span>
-                <span className="text-text-muted text-sm ml-1">
-                  {plan.period}
-                </span>
-              </div>
-
-              <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-start gap-2.5 text-sm text-text-secondary"
-                  >
-                    <Check className="w-4 h-4 text-[hsl(var(--success))] mt-0.5 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="/login"
-                className={`text-center ${
-                  plan.popular ? "btn-primary" : "btn-secondary"
-                }`}
-              >
-                {plan.cta}
-              </Link>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ========================================
-   CTA SECTION
-   ======================================== */
-function CtaSection() {
-  return (
-    <section className="py-24 px-6">
-      <div className="mx-auto max-w-4xl text-center relative overflow-hidden glass-card-featured p-12 sm:p-16">
-        {/* Background glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--accent)/0.08)] to-transparent pointer-events-none" />
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[hsl(var(--spark)/0.05)] blur-[80px] pointer-events-none" />
-
-        <div className="relative z-10">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-text-primary mb-4">
-            Ready to Create Content That{" "}
-            <span className="gradient-text">Actually Works?</span>
-          </h2>
-          <p className="text-text-secondary text-lg mb-8 max-w-xl mx-auto">
-            Join 500+ creators who save 3+ hours daily with AI-generated hooks,
-            captions & CTAs.
-          </p>
-          <Link href="/login" className="btn-primary-lg inline-flex">
-            <Sparkles className="w-5 h-5" />
-            Start Generating — It&apos;s Free
-          </Link>
-          <p className="mt-4 text-xs text-text-muted">
-            No credit card required · Cancel anytime
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ========================================
-   MAIN PAGE
-   ======================================== */
-export default function Home() {
   return (
     <>
-      <Navbar />
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <HowItWorksSection />
-        <PricingSection />
-        <CtaSection />
-      </main>
+      {/* Custom cursor */}
+      <div ref={cursorRef} className={styles.cursor}></div>
+      <div ref={ringRef} className={styles.cursorRing}></div>
+
+      {/* ═══ HERO ═══ */}
+      <section className={styles.hero}>
+        <div className={`orb ${styles.orb1}`}></div>
+        <div className={`orb ${styles.orb2}`}></div>
+        <div className={`orb ${styles.orb3}`}></div>
+
+        <div className="badge">ContentMint — AI Content Engine</div>
+
+        <h1 className={styles.heroTitle}>
+          <span className={styles.line1}>Stop Staring.</span>
+          <span className={`${styles.line2} gradient-text`}>Start Going Viral.</span>
+        </h1>
+
+        <p className={styles.heroSub}>
+          Generate irresistible hooks, captions, CTAs, titles, and ideas in seconds.
+          Built for creators who can&apos;t afford to be forgettable.
+        </p>
+
+        <div className={styles.heroCta}>
+          <button className="btn-primary" onClick={() => document.getElementById("topicInput")?.focus()}>
+            Generate Free ⚡
+          </button>
+          <button className="btn-ghost" onClick={() => document.getElementById("demoSection")?.scrollIntoView({ behavior: "smooth" })}>
+            See It In Action →
+          </button>
+        </div>
+      </section>
+
+      {/* ═══ TICKER ═══ */}
+      <div className="ticker-wrap">
+        <div className="ticker-track">
+          {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+            <span key={i} className="ticker-item">{item}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══ FEATURES ═══ */}
+      <div className="section">
+        <p className="section-label">What We Generate</p>
+        <h2 className="section-title">Five weapons.<br />One prompt.</h2>
+        <div className="cards-grid">
+          {FEATURES.map((f, i) => (
+            <div key={i} className="card">
+              <span className="card-icon">{f.icon}</span>
+              <div className="card-title">{f.title}</div>
+              <p className="card-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══ DEMO ═══ */}
+      <div className="section" style={{ paddingTop: 0 }} id="demoSection">
+        <p className="section-label">Live Demo</p>
+        <h2 className="section-title" style={{ marginBottom: 40 }}>Try it right now.</h2>
+
+        <div className={styles.demoWrap}>
+          {/* Faux title bar */}
+          <div className={styles.demoBar}>
+            <div className={styles.demoDot} style={{ background: "#ff5f57" }}></div>
+            <div className={styles.demoDot} style={{ background: "#ffbd2e" }}></div>
+            <div className={styles.demoDot} style={{ background: "#28c840" }}></div>
+            <div className={styles.demoTitleBar}>ContentMint — generator</div>
+          </div>
+
+          <div className={styles.demoBody}>
+            {/* Input row */}
+            <div className={styles.inputRow}>
+              <div className={styles.inputInner}>
+                <input
+                  id="topicInput"
+                  className={styles.input}
+                  type="text"
+                  value={topic}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && generateContent()}
+                  placeholder=""
+                />
+                {/* Typewriter placeholder */}
+                <span className={`${styles.twPlaceholder} ${!twVisible ? styles.twHidden : ""}`}>
+                  <span
+                    className={styles.twChip}
+                    style={{
+                      color: currentDemo.chipColor,
+                      background: currentDemo.chipBg,
+                      borderColor: currentDemo.chipBorder,
+                    }}
+                  >
+                    {currentDemo.chip}
+                  </span>
+                  <span className={styles.twTextSpan}>{twText}</span>
+                </span>
+              </div>
+              <button
+                className={`${styles.genBtn} ${loading ? styles.genBtnLoading : ""}`}
+                onClick={generateContent}
+                disabled={loading}
+              >
+                {loading ? "Generating…" : "Generate ⚡"}
+              </button>
+            </div>
+
+            {/* Type tabs */}
+            <div className={styles.tabs}>
+              {CONTENT_TYPES.map((type, i) => (
+                <button
+                  key={type}
+                  className={`${styles.tab} ${currentType === type ? styles.tabActive : ""}`}
+                  data-tab-index={i}
+                  onClick={() => setCurrentType(type)}
+                >
+                  {TAB_META[type].emoji} {TAB_META[type].label}
+                </button>
+              ))}
+            </div>
+
+            {/* Output area */}
+            <div className={styles.outputArea}>
+              {loading ? (
+                <div style={{ padding: "8px 0" }}>
+                  {[...Array(9)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="skeleton-line"
+                      style={{
+                        width: i % 3 === 1 ? "80%" : i % 3 === 2 ? "90%" : "100%",
+                        marginTop: i > 0 && i % 3 === 0 ? 20 : 0,
+                      }}
+                    ></div>
+                  ))}
+                </div>
+              ) : error ? (
+                <div className={styles.placeholderState}>
+                  <div className={styles.placeholderIcon}>⚠️</div>
+                  <div className={styles.placeholderText}>{error}</div>
+                </div>
+              ) : currentItems.length > 0 ? (
+                currentItems.map((item, i) => (
+                  <div
+                    key={i}
+                    className={styles.outputItem}
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                    onClick={() => copyItem(item, i)}
+                  >
+                    <span className={styles.itemNum}>0{i + 1}</span>
+                    <span className={styles.itemText}>{item}</span>
+                    <button id={`copy-btn-${i}`} className={styles.itemCopy}>Copy</button>
+                  </div>
+                ))
+              ) : hasAnyResults ? (
+                <div className={styles.placeholderState}>
+                  <div className={styles.placeholderIcon}>🔄</div>
+                  <div className={styles.placeholderText}>Generate to see {currentType}</div>
+                </div>
+              ) : (
+                <div className={styles.placeholderState}>
+                  <div className={styles.placeholderIcon}>✨</div>
+                  <div className={styles.placeholderText}>Enter a topic and hit Generate</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ STATS ═══ */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }}>
+        <div className="stats-strip">
+          {STATS.map((s, i) => (
+            <div key={i} className="stat-item">
+              <span className="stat-num">{s.num}</span>
+              <span className="stat-label">{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══ FOOTER ═══ */}
       <Footer />
     </>
   );

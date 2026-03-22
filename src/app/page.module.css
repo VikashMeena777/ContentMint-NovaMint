@@ -1,0 +1,430 @@
+/* ═══════════════════════════════════════════
+   page.module.css — Homepage component styles
+   Matches Homepage.html exactly
+   ═══════════════════════════════════════════ */
+
+/* ── Custom Cursor ── */
+.cursor {
+  width: 12px;
+  height: 12px;
+  background: var(--accent1);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, background 0.2s;
+}
+
+.cursorRing {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--accent2);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.18s ease;
+  mix-blend-mode: screen;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.orb1 {
+  width: 600px;
+  height: 600px;
+  background: var(--glow1);
+  top: -20%;
+  left: -10%;
+}
+
+.orb2 {
+  width: 450px;
+  height: 450px;
+  background: var(--glow2);
+  bottom: -10%;
+  right: -5%;
+  animation-delay: 2s;
+}
+
+.orb3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 230, 0, 0.12);
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 4s;
+}
+
+.heroTitle {
+  font-size: clamp(42px, 6.5vw, 80px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.0;
+  margin: 24px 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.line1 {
+  display: block;
+  animation: fadeUp 0.8s ease both;
+  animation-delay: 0.2s;
+}
+
+.line2 {
+  display: block;
+  animation: fadeUp 0.8s ease both;
+  animation-delay: 0.5s;
+}
+
+.heroSub {
+  max-width: 520px;
+  color: var(--muted);
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  font-family: var(--font-mono);
+  animation: fadeUp 0.8s ease both;
+  animation-delay: 0.7s;
+  position: relative;
+  z-index: 1;
+  font-weight: 400;
+}
+
+.heroCta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.8s ease both;
+  animation-delay: 0.9s;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── DEMO SECTION ── */
+.demoWrap {
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 60px var(--glow1);
+}
+
+.demoBar {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.demoDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.demoTitleBar {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.demoBody {
+  padding: 28px 32px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+.inputInner {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+  border-color: var(--accent1);
+  box-shadow: 0 0 0 3px rgba(255, 60, 172, 0.15);
+}
+
+.input::placeholder {
+  color: transparent;
+}
+
+/* ── Typewriter Placeholder ── */
+.twPlaceholder {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  transition: opacity 0.15s;
+}
+
+.twHidden {
+  opacity: 0;
+}
+
+.twPlaceholder::after {
+  content: '|';
+  color: var(--accent1);
+  animation: blink 0.75s step-start infinite;
+  margin-left: 1px;
+  font-weight: 400;
+}
+
+.twChip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.twTextSpan {
+  display: inline;
+}
+
+/* ── Generate Button ── */
+.genBtn {
+  background: linear-gradient(135deg, var(--accent1), var(--purple));
+  color: #fff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.genBtn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 30px var(--glow1);
+}
+
+.genBtnLoading {
+  pointer-events: none;
+}
+
+.genBtnLoading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  animation: shimmerBtn 0.9s infinite;
+}
+
+/* ── Type Tabs ── */
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  color: var(--muted);
+  background: transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.tabActive {
+  color: #050508;
+  border-color: transparent;
+}
+
+.tab:nth-child(1).tabActive,
+.tab:nth-child(1):hover { background: var(--accent1); color: #050508; border-color: transparent; }
+.tab:nth-child(2).tabActive,
+.tab:nth-child(2):hover { background: var(--accent2); color: #050508; border-color: transparent; }
+.tab:nth-child(3).tabActive,
+.tab:nth-child(3):hover { background: var(--accent3); color: #050508; border-color: transparent; }
+.tab:nth-child(4).tabActive,
+.tab:nth-child(4):hover { background: #a855f7; color: #050508; border-color: transparent; }
+.tab:nth-child(5).tabActive,
+.tab:nth-child(5):hover { background: #3b82f6; color: #050508; border-color: transparent; }
+
+/* ── Output Area ── */
+.outputArea {
+  min-height: 220px;
+}
+
+.outputItem {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  animation: itemIn 0.4s ease both;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.outputItem:hover {
+  border-color: rgba(255, 60, 172, 0.4);
+  background: rgba(255, 60, 172, 0.05);
+}
+
+.outputItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent1), var(--accent2));
+  border-radius: 0 2px 2px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.outputItem:hover::before {
+  opacity: 1;
+}
+
+.itemNum {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent1);
+  min-width: 20px;
+  padding-top: 3px;
+  font-weight: 700;
+}
+
+.itemText {
+  font-size: 13px;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.itemCopy {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.itemCopy:hover {
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+
+/* ── Placeholder State ── */
+.placeholderState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  gap: 12px;
+}
+
+.placeholderIcon {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.placeholderText {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .heroTitle {
+    letter-spacing: -2px;
+  }
+
+  .inputRow {
+    flex-direction: column;
+  }
+
+  .heroCta {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .demoBody {
+    padding: 20px 16px;
+  }
+}
