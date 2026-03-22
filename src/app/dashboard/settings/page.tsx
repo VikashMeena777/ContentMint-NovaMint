@@ -22,7 +22,7 @@ function SettingsContent() {
   );
 
   useEffect(() => {
-    async function load() {
+    async function loadProfile() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -43,13 +43,36 @@ function SettingsContent() {
       }
     }
 
-    load();
+    async function verifyPayment(orderId: string) {
+      try {
+        // Call verify endpoint — this polls Cashfree directly and
+        // upgrades the plan in Supabase if payment was successful.
+        // This is the critical fallback when the webhook doesn't fire.
+        const res = await fetch(`/api/checkout/verify?order_id=${orderId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === "paid" && data.plan) {
+            setPlan(data.plan);
+            setPaymentSuccess(true);
+            setTimeout(() => setPaymentSuccess(false), 5000);
+          }
+        }
+      } catch (err) {
+        console.error("Payment verification failed:", err);
+      }
+      // Always reload profile after verification attempt
+      await loadProfile();
+    }
 
-    // Show payment success toast
-    if (searchParams.get("payment") === "success") {
-      setPaymentSuccess(true);
-      setTimeout(() => setPaymentSuccess(false), 5000);
-      load();
+    loadProfile();
+
+    // Handle payment redirect from Cashfree
+    const paymentStatus = searchParams.get("payment");
+    const orderId = searchParams.get("order_id");
+
+    if (paymentStatus === "success" && orderId) {
+      // Verify the payment with Cashfree and upgrade the plan
+      verifyPayment(orderId);
     }
   }, [searchParams]);
 
