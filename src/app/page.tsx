@@ -155,7 +155,25 @@ export default function Home() {
 
   /* ── Generate content (landing page demo — real Groq API, 1 free try) ── */
   const generateContent = async () => {
-    if (!topic.trim() || hasGenerated) return;
+    if (!topic.trim()) return;
+
+    // Second attempt → show warning + redirect
+    if (hasGenerated) {
+      setError("");
+      let count = 3;
+      setRedirectCountdown(count);
+      const interval = setInterval(() => {
+        count -= 1;
+        setRedirectCountdown(count);
+        if (count <= 0) {
+          clearInterval(interval);
+          router.push("/login");
+        }
+      }, 1000);
+      return;
+    }
+
+    // First attempt → call real API
     setLoading(true);
     setError("");
 
@@ -183,18 +201,6 @@ export default function Home() {
 
     setLoading(false);
     setHasGenerated(true);
-
-    // Start 4-second countdown then redirect to login
-    let count = 4;
-    setRedirectCountdown(count);
-    const interval = setInterval(() => {
-      count -= 1;
-      setRedirectCountdown(count);
-      if (count <= 0) {
-        clearInterval(interval);
-        router.push("/login");
-      }
-    }, 1000);
   };
 
   const copyItem = (text: string, idx: number) => {
@@ -301,7 +307,7 @@ export default function Home() {
                   type="text"
                   value={topic}
                   onChange={(e) => handleInputChange(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !hasGenerated && generateContent()}
+                  onKeyDown={(e) => e.key === "Enter" && generateContent()}
                   placeholder=""
                 />
                 {/* Typewriter placeholder */}
@@ -322,10 +328,9 @@ export default function Home() {
               <button
                 className={`${styles.genBtn} ${loading ? styles.genBtnLoading : ""}`}
                 onClick={generateContent}
-                disabled={loading || hasGenerated}
-                style={hasGenerated ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                disabled={loading}
               >
-                {loading ? "Generating…" : hasGenerated ? "Demo Used ✓" : "Generate ⚡"}
+                {loading ? "Generating…" : "Generate ⚡"}
               </button>
             </div>
 
@@ -336,7 +341,7 @@ export default function Home() {
                 border: "1px solid rgba(255,59,48,0.3)",
                 borderRadius: 12,
                 padding: "12px 18px",
-                marginTop: 12,
+                margin: "16px 0",
                 color: "#ff5f57",
                 fontSize: 14,
                 fontWeight: 500,
@@ -345,18 +350,19 @@ export default function Home() {
               </div>
             )}
 
-            {/* Redirect banner after demo */}
+            {/* Redirect banner on second attempt */}
             {redirectCountdown !== null && (
               <div style={{
                 background: "linear-gradient(135deg, rgba(0,245,212,0.12), rgba(168,85,247,0.12))",
                 border: "1px solid rgba(0,245,212,0.3)",
                 borderRadius: 12,
-                padding: "14px 20px",
-                marginTop: 12,
+                padding: "16px 22px",
+                margin: "16px 0",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: 12,
+                gap: 16,
+                flexWrap: "wrap",
               }}>
                 <span style={{ color: "var(--text-primary)", fontSize: 14, fontWeight: 500 }}>
                   🎉 Loved it? Sign up free to unlock unlimited generations!
