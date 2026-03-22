@@ -209,7 +209,7 @@ export default function Home() {
   const currentDemo = twDemos[twDemoIdx];
 
   return (
-    <>
+    <div className="homepage" style={{ background: 'var(--hp-bg)', minHeight: '100vh' }}>
       {/* Custom cursor */}
       <div ref={cursorRef} className={styles.cursor}></div>
       <div ref={ringRef} className={styles.cursorRing}></div>
@@ -397,6 +397,6 @@ export default function Home() {
 
       {/* ═══ FOOTER ═══ */}
       <Footer />
-    </>
+    </div>
   );
 }
