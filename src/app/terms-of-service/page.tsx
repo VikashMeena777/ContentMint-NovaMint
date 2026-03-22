@@ -23,6 +23,13 @@ export default function TermsOfServicePage() {
               ContentMint
             </span>
           </Link>
+          <div className="hidden sm:flex items-center gap-6">
+            <Link href="/about" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">About</Link>
+            <Link href="/contact" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Contact</Link>
+            <Link href="/terms-of-service" className="text-sm font-medium text-accent">Terms</Link>
+            <Link href="/privacy-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Privacy</Link>
+            <Link href="/cookie-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Cookies</Link>
+          </div>
           <Link href="/login" className="btn-primary text-sm">
             Get Started Free
           </Link>

@@ -33,8 +33,10 @@ export default function Footer() {
             © {new Date().getFullYear()} ContentMint. Built for creators.
           </span>
           <div className={styles.links}>
+            <Link href="/about" className={styles.link}>About</Link>
             <Link href="/terms-of-service" className={styles.link}>Terms</Link>
             <Link href="/privacy-policy" className={styles.link}>Privacy</Link>
+            <Link href="/cookie-policy" className={styles.link}>Cookies</Link>
             <Link href="/contact" className={styles.link}>Contact</Link>
           </div>
         </div>

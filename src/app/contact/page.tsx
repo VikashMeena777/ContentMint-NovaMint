@@ -29,6 +29,13 @@ export default function ContactPage() {
               ContentMint
             </span>
           </Link>
+          <div className="hidden sm:flex items-center gap-6">
+            <Link href="/about" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">About</Link>
+            <Link href="/contact" className="text-sm font-medium text-accent">Contact</Link>
+            <Link href="/terms-of-service" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Terms</Link>
+            <Link href="/privacy-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Privacy</Link>
+            <Link href="/cookie-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Cookies</Link>
+          </div>
           <Link href="/login" className="btn-primary text-sm">
             Get Started Free
           </Link>
@@ -45,7 +52,7 @@ export default function ContactPage() {
         </p>
 
         {submitted ? (
-          <div className="glass-card-featured p-8 text-center">
+          <div className="glass-card-featured p-10 text-center">
             <div className="w-14 h-14 rounded-full bg-[hsl(var(--success)/0.15)] flex items-center justify-center mx-auto mb-4">
               <Send className="w-6 h-6 text-[hsl(var(--success))]" />
             </div>
@@ -59,9 +66,9 @@ export default function ContactPage() {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="glass-card p-8 space-y-6"
+            className="glass-card p-10 space-y-8"
           >
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
                   Name
@@ -114,13 +121,13 @@ export default function ContactPage() {
           </form>
         )}
 
-        <div className="mt-12 grid sm:grid-cols-2 gap-6">
-          <div className="glass-card p-6 text-center">
+        <div className="mt-14 grid sm:grid-cols-2 gap-6">
+          <div className="glass-card p-8 text-center">
             <Mail className="w-6 h-6 text-accent mx-auto mb-3" />
             <h3 className="font-semibold text-text-primary mb-1">Email</h3>
-            <p className="text-text-secondary text-sm">[ContentMintApp@gamil.com]</p>
+            <p className="text-text-secondary text-sm">ContentMintApp@gamil.com</p>
           </div>
-          <div className="glass-card p-6 text-center">
+          <div className="glass-card p-8 text-center">
             <MessageSquare className="w-6 h-6 text-spark mx-auto mb-3" />
             <h3 className="font-semibold text-text-primary mb-1">Social</h3>
             <p className="text-text-secondary text-sm">@contentmint on IG</p>
