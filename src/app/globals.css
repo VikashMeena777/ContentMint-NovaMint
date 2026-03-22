@@ -803,7 +803,7 @@ body {
 .homepage .badge::before {
   content: '●';
   font-size: 8px;
-  animation: hp-blink 1.2s infinite;
+  animation: hp-blink 1.2s infinite !important;
 }
 
 /* Homepage Cards */
@@ -914,7 +914,7 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 3s linear infinite;
+  animation: hp-shimmer 3s linear infinite !important;
 }
 
 /* Homepage Orb (background glow) */
@@ -939,8 +939,9 @@ body {
 .homepage .ticker-track {
   display: flex;
   gap: 0;
-  animation: hp-tickerMove 18s linear infinite;
+  animation: hp-tickerMove 18s linear infinite !important;
   white-space: nowrap;
+  will-change: transform;
 }
 
 .homepage .ticker-item {
@@ -972,7 +973,7 @@ body {
 }
 
 /* Homepage-specific keyframes */
-@keyframes shimmer {
+@keyframes hp-shimmer {
   0% { background-position: 0%; }
   100% { background-position: 200%; }
 }
