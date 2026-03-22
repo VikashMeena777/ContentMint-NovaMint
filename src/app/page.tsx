@@ -255,7 +255,7 @@ export default function Home() {
       </div>
 
       {/* ═══ FEATURES ═══ */}
-      <div className="section">
+      <div className="section" id="features" style={{ scrollMarginTop: 80 }}>
         <p className="section-label">What We Generate</p>
         <h2 className="section-title">Five weapons.<br />One prompt.</h2>
         <div className="cards-grid">
