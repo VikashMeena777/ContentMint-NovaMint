@@ -633,13 +633,27 @@ body {
    ======================================== */
 
 /* Homepage Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap');
-
 /* Homepage overrides — only apply inside .homepage wrapper */
 .homepage {
   font-family: var(--hp-font-heading);
   color: var(--hp-text);
   overflow-x: hidden;
+
+  /* Non-prefixed aliases so page.module.css resolves correctly */
+  --bg: var(--hp-bg);
+  --surface: var(--hp-surface);
+  --accent1: var(--hp-accent1);
+  --accent2: var(--hp-accent2);
+  --accent3: var(--hp-accent3);
+  --text: var(--hp-text);
+  --muted: var(--hp-muted);
+  --glow1: var(--hp-glow1);
+  --glow2: var(--hp-glow2);
+  --purple: var(--hp-purple);
+  --purple-card: var(--hp-purple-card);
+  --blue-card: var(--hp-blue-card);
+  --font-heading: var(--hp-font-heading);
+  --font-mono: var(--hp-font-mono);
 }
 
 /* BG noise grain — only on homepage */
