@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Sparkles,
   Zap,
   MessageSquare,
   Target,
@@ -18,7 +18,6 @@ import {
   X,
   LayoutDashboard,
 } from "lucide-react";
-import Image from "next/image";
 import { createBrowserClient } from "@supabase/ssr";
 import clsx from "clsx";
 import { PLAN_LIMITS, formatCreditLimit } from "@/lib/plan-limits";
@@ -173,9 +172,13 @@ export default function Sidebar() {
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 glass-card-static py-3 px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-          </div>
+          <Image
+            src="/ContentMint Logo.jpg"
+            alt="ContentMint"
+            width={28}
+            height={28}
+            className="rounded-lg"
+          />
           <span className="text-base font-bold text-text-primary font-display">
             ContentMint
           </span>
@@ -210,9 +213,13 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="p-5 border-b border-border">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <Image
+              src="/ContentMint Logo.jpg"
+              alt="ContentMint"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
             <span className="text-lg font-bold text-text-primary font-display">
               ContentMint
             </span>

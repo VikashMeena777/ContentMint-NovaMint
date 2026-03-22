@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Menu, X, LayoutDashboard } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, LayoutDashboard } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
 
 export default function Navbar() {
@@ -50,16 +51,20 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "py-2.5 bg-[hsl(var(--bg-base)/0.8)] backdrop-blur-xl border-b border-[hsl(var(--glass-border)/0.15)] shadow-[0_4px_30px_hsl(var(--bg-base)/0.5)]"
+          ? "py-2.5 bg-[hsl(var(--bg-base)/0.92)] backdrop-blur-3xl border-b border-[hsl(var(--glass-border)/0.15)] shadow-[0_4px_30px_hsl(var(--bg-base)/0.5)]"
           : "py-4 bg-transparent border-b border-transparent"
       }`}
     >
       <div className="mx-auto max-w-7xl px-6 flex items-center justify-between relative">
         {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--spark)/0.7)] flex items-center justify-center group-hover:shadow-[0_0_20px_hsl(var(--accent-glow)/0.5)] transition-all duration-300">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
+          <Image
+            src="/ContentMint Logo.jpg"
+            alt="ContentMint"
+            width={36}
+            height={36}
+            className="rounded-lg group-hover:shadow-[0_0_20px_hsl(var(--accent-glow)/0.5)] transition-all duration-300"
+          />
           <span className="text-lg font-bold text-text-primary font-display tracking-tight">
             ContentMint
           </span>

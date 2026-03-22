@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Sparkles, Users, Zap, Heart } from "lucide-react";
+import Image from "next/image";
+import { Users, Zap, Heart } from "lucide-react";
 
 export const metadata = {
   title: "About — ContentMint",
@@ -14,9 +15,13 @@ export default function AboutPage() {
       <nav className="sticky top-0 z-50 glass-card-static border-b border-[hsl(var(--border))]">
         <div className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--spark)/0.7)] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <Image
+              src="/ContentMint Logo.jpg"
+              alt="ContentMint"
+              width={36}
+              height={36}
+              className="rounded-lg"
+            />
             <span className="text-lg font-bold text-text-primary font-display tracking-tight">
               ContentMint
             </span>
