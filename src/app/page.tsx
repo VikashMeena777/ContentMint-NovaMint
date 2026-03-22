@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -47,12 +48,16 @@ const TICKER_ITEMS = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+
   /* ── State ── */
   const [topic, setTopic] = useState("");
   const [currentType, setCurrentType] = useState<ContentType>("hooks");
   const [results, setResults] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [hasGenerated, setHasGenerated] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
 
   /* ── Typewriter state ── */
   const [twText, setTwText] = useState("");
@@ -148,45 +153,48 @@ export default function Home() {
     }
   };
 
-  /* ── Generate content (landing page demo — mock data) ── */
+  /* ── Generate content (landing page demo — real Groq API, 1 free try) ── */
   const generateContent = async () => {
-    if (!topic.trim()) return;
+    if (!topic.trim() || hasGenerated) return;
     setLoading(true);
     setError("");
 
-    // Simulate API delay for realistic feel
-    await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800));
+    try {
+      const res = await fetch("/api/demo-generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: topic.trim() }),
+      });
 
-    const t = topic.trim();
-    setResults({
-      hooks: [
-        `I spent 30 days studying ${t} — here's what nobody tells you.`,
-        `Stop doing ${t} wrong. This one shift changes everything.`,
-        `The #1 ${t} mistake killing your results (and the fix).`,
-      ],
-      captions: [
-        `If you're sleeping on ${t}, wake up. 🔥 Here's why the smartest creators are already all-in → [link in bio]`,
-        `POV: You finally figured out ${t} and your engagement 3x'd overnight 📈`,
-        `"${t}? That's not for me." — You, 6 months before it changed your business. Let me explain ⬇️`,
-      ],
-      ctas: [
-        `Grab the free ${t} playbook before we gate it →`,
-        `DM "${t.split(" ")[0].toUpperCase()}" and I'll send you the full breakdown.`,
-        `Only 48 hours left to join the ${t} masterclass — spots are almost gone 🔒`,
-      ],
-      titles: [
-        `How ${t} Took Me From 0 to 100K Followers in 90 Days`,
-        `The Ultimate ${t} Guide (2025 Edition)`,
-        `Why ${t} Is the Most Underrated Strategy Right Now`,
-      ],
-      ideas: [
-        `Create a "Day in the Life" reel showing your ${t} workflow from start to finish`,
-        `Interview 5 experts on their #1 ${t} hot take — compile into a carousel`,
-        `Build a free ${t} calculator/checklist tool and use it as a lead magnet`,
-      ],
-    });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Generation failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      setResults(data.results);
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+      return;
+    }
 
     setLoading(false);
+    setHasGenerated(true);
+
+    // Start 4-second countdown then redirect to login
+    let count = 4;
+    setRedirectCountdown(count);
+    const interval = setInterval(() => {
+      count -= 1;
+      setRedirectCountdown(count);
+      if (count <= 0) {
+        clearInterval(interval);
+        router.push("/login");
+      }
+    }, 1000);
   };
 
   const copyItem = (text: string, idx: number) => {
@@ -293,7 +301,7 @@ export default function Home() {
                   type="text"
                   value={topic}
                   onChange={(e) => handleInputChange(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && generateContent()}
+                  onKeyDown={(e) => e.key === "Enter" && !hasGenerated && generateContent()}
                   placeholder=""
                 />
                 {/* Typewriter placeholder */}
@@ -314,11 +322,50 @@ export default function Home() {
               <button
                 className={`${styles.genBtn} ${loading ? styles.genBtnLoading : ""}`}
                 onClick={generateContent}
-                disabled={loading}
+                disabled={loading || hasGenerated}
+                style={hasGenerated ? { opacity: 0.5, cursor: "not-allowed" } : {}}
               >
-                {loading ? "Generating…" : "Generate ⚡"}
+                {loading ? "Generating…" : hasGenerated ? "Demo Used ✓" : "Generate ⚡"}
               </button>
             </div>
+
+            {/* Error display */}
+            {error && (
+              <div style={{
+                background: "rgba(255,59,48,0.1)",
+                border: "1px solid rgba(255,59,48,0.3)",
+                borderRadius: 12,
+                padding: "12px 18px",
+                marginTop: 12,
+                color: "#ff5f57",
+                fontSize: 14,
+                fontWeight: 500,
+              }}>
+                ⚠️ {error}
+              </div>
+            )}
+
+            {/* Redirect banner after demo */}
+            {redirectCountdown !== null && (
+              <div style={{
+                background: "linear-gradient(135deg, rgba(0,245,212,0.12), rgba(168,85,247,0.12))",
+                border: "1px solid rgba(0,245,212,0.3)",
+                borderRadius: 12,
+                padding: "14px 20px",
+                marginTop: 12,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+              }}>
+                <span style={{ color: "var(--text-primary)", fontSize: 14, fontWeight: 500 }}>
+                  🎉 Loved it? Sign up free to unlock unlimited generations!
+                </span>
+                <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap" }}>
+                  Redirecting in {redirectCountdown}s…
+                </span>
+              </div>
+            )}
 
             {/* Type tabs */}
             <div className={styles.tabs}>
