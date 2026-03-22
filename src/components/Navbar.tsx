@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, LayoutDashboard } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -26,10 +26,14 @@ export default function Navbar() {
   // Check auth state
   useEffect(() => {
     async function checkAuth() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        setIsLoggedIn(!!session);
+      } catch {
+        setIsLoggedIn(false);
+      }
       setChecking(false);
     }
     checkAuth();
@@ -48,68 +52,41 @@ export default function Navbar() {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "py-2.5 bg-[hsl(var(--bg-base)/0.92)] backdrop-blur-3xl border-b border-[hsl(var(--glass-border)/0.15)] shadow-[0_4px_30px_hsl(var(--bg-base)/0.5)]"
-          : "py-4 bg-transparent border-b border-transparent"
-      }`}
-    >
-      <div className="mx-auto max-w-7xl px-6 flex items-center justify-between relative">
-        {/* Left: Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+    <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ""}`}>
+      <div className={styles.inner}>
+        {/* Logo */}
+        <Link href="/" className={styles.logo}>
           <Image
             src="/ContentMint Logo.jpg"
             alt="ContentMint"
-            width={36}
-            height={36}
-            className="rounded-lg group-hover:shadow-[0_0_20px_hsl(var(--accent-glow)/0.5)] transition-all duration-300"
+            width={32}
+            height={32}
+            className={styles.logoImg}
           />
-          <span className="text-lg font-bold text-text-primary font-display tracking-tight">
-            ContentMint
-          </span>
+          ContentMint
         </Link>
 
-        {/* Center: Nav Links (absolutely centered) */}
-        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-          <a
-            href="#features"
-            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary rounded-lg hover:bg-[hsl(var(--bg-hover))] transition-all duration-200"
-          >
-            Features
-          </a>
-          <a
-            href="#how-it-works"
-            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary rounded-lg hover:bg-[hsl(var(--bg-hover))] transition-all duration-200"
-          >
-            How It Works
-          </a>
-          <a
-            href="#pricing"
-            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary rounded-lg hover:bg-[hsl(var(--bg-hover))] transition-all duration-200"
-          >
-            Pricing
-          </a>
+        {/* Center nav links */}
+        <div className={styles.centerLinks}>
+          <a href="#features" className={styles.navLink}>Features</a>
+          <a href="#demoSection" className={styles.navLink}>Demo</a>
+          <Link href="/contact" className={styles.navLink}>Contact</Link>
         </div>
 
-        {/* Right side: Auth Buttons (desktop) + Mobile Toggle */}
-        <div className="flex items-center gap-3">
+        {/* Right: auth buttons + mobile toggle */}
+        <div className={styles.right}>
           {!checking && (
-            <div className="hidden md:flex items-center gap-3">
+            <div className={styles.authDesktop}>
               {isLoggedIn ? (
-                <Link href="/dashboard" className="btn-primary text-sm py-2.5 px-5">
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
+                <Link href="/dashboard" className={`btn-primary ${styles.dashBtn}`}>
+                  ⚡ Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link
-                    href="/login"
-                    className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors px-3 py-2"
-                  >
+                  <Link href="/login" className={styles.loginLink}>
                     Log in
                   </Link>
-                  <Link href="/login" className="btn-primary text-sm py-2.5 px-5">
+                  <Link href="/login" className={`btn-primary ${styles.getStartedBtn}`}>
                     Get Started Free
                   </Link>
                 </>
@@ -117,55 +94,44 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile Toggle */}
+          {/* Mobile toggle */}
           <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[hsl(var(--bg-hover))] text-text-secondary hover:text-text-primary transition-colors"
+            className={styles.mobileToggle}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden mt-2 mx-4 p-4 rounded-2xl bg-[hsl(var(--bg-surface)/0.95)] backdrop-blur-2xl border border-[hsl(var(--glass-border)/0.2)] flex flex-col gap-1 animate-scale-in shadow-xl">
-          <a
-            href="#features"
-            className="px-4 py-3 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-[hsl(var(--bg-hover))] rounded-xl transition-colors"
-            onClick={closeMobile}
-          >
-            Features
-          </a>
-          <a
-            href="#how-it-works"
-            className="px-4 py-3 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-[hsl(var(--bg-hover))] rounded-xl transition-colors"
-            onClick={closeMobile}
-          >
-            How It Works
-          </a>
-          <a
-            href="#pricing"
-            className="px-4 py-3 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-[hsl(var(--bg-hover))] rounded-xl transition-colors"
-            onClick={closeMobile}
-          >
-            Pricing
-          </a>
+        <div className={styles.mobileMenu}>
+          <a href="#features" className={styles.mobileLink} onClick={closeMobile}>Features</a>
+          <a href="#demoSection" className={styles.mobileLink} onClick={closeMobile}>Demo</a>
+          <Link href="/contact" className={styles.mobileLink} onClick={closeMobile}>Contact</Link>
 
           {!checking && (
-            <div className="mt-2 pt-3 border-t border-[hsl(var(--border))] flex flex-col gap-2">
+            <div className={styles.mobileDivider}>
               {isLoggedIn ? (
-                <Link href="/dashboard" className="btn-primary text-center" onClick={closeMobile}>
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
+                <Link href="/dashboard" className="btn-primary" onClick={closeMobile} style={{ textAlign: "center" }}>
+                  ⚡ Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link href="/login" className="btn-secondary text-center" onClick={closeMobile}>
+                  <Link href="/login" className="btn-ghost" onClick={closeMobile} style={{ textAlign: "center" }}>
                     Log in
                   </Link>
-                  <Link href="/login" className="btn-primary text-center" onClick={closeMobile}>
+                  <Link href="/login" className="btn-primary" onClick={closeMobile} style={{ textAlign: "center" }}>
                     Get Started Free
                   </Link>
                 </>

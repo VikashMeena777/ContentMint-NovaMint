@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -18,9 +19,9 @@ export default function Footer() {
         No credit card. No learning curve. Just results.
       </p>
 
-      <button className={`btn-primary ${styles.ctaBtn}`}>
+      <Link href="/login" className={`btn-primary ${styles.ctaBtn}`}>
         Start Generating Free →
-      </button>
+      </Link>
 
       {/* Bottom bar */}
       <div className={styles.bottomBar}>
@@ -32,9 +33,9 @@ export default function Footer() {
             © {new Date().getFullYear()} ContentMint. Built for creators.
           </span>
           <div className={styles.links}>
-            <a href="#" className={styles.link}>Terms</a>
-            <a href="#" className={styles.link}>Privacy</a>
-            <a href="#" className={styles.link}>Contact</a>
+            <Link href="/terms-of-service" className={styles.link}>Terms</Link>
+            <Link href="/privacy-policy" className={styles.link}>Privacy</Link>
+            <Link href="/contact" className={styles.link}>Contact</Link>
           </div>
         </div>
       </div>

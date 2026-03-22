@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import styles from "./page.module.css";
 
@@ -212,6 +214,9 @@ export default function Home() {
       <div ref={cursorRef} className={styles.cursor}></div>
       <div ref={ringRef} className={styles.cursorRing}></div>
 
+      {/* Navbar */}
+      <Navbar />
+
       {/* ═══ HERO ═══ */}
       <section className={styles.hero}>
         <div className={`orb ${styles.orb1}`}></div>
@@ -231,9 +236,9 @@ export default function Home() {
         </p>
 
         <div className={styles.heroCta}>
-          <button className="btn-primary" onClick={() => document.getElementById("topicInput")?.focus()}>
+          <Link href="/login" className="btn-primary">
             Generate Free ⚡
-          </button>
+          </Link>
           <button className="btn-ghost" onClick={() => document.getElementById("demoSection")?.scrollIntoView({ behavior: "smooth" })}>
             See It In Action →
           </button>
