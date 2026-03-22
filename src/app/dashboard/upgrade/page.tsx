@@ -26,18 +26,20 @@ const PLAN_META: Record<
     badge?: string;
     bg: string;
     iconBg: string;
+    iconColor: string;
   }
 > = {
   free: {
-    icon: <Zap className="w-6 h-6" />,
+    icon: <Zap className="w-5 h-5" />,
     gradient: "from-emerald-400 to-teal-500",
     glowColor: "shadow-emerald-500/20",
     tagline: "Perfect for getting started",
     bg: "bg-gradient-to-br from-emerald-500/5 to-teal-500/5",
     iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20",
+    iconColor: "text-emerald-400",
   },
   pro: {
-    icon: <Crown className="w-6 h-6" />,
+    icon: <Crown className="w-5 h-5" />,
     gradient: "from-[hsl(var(--accent))] to-[hsl(var(--spark))]",
     glowColor: "shadow-[hsl(var(--accent-glow))/0.25]",
     tagline: "For serious creators & marketers",
@@ -45,14 +47,16 @@ const PLAN_META: Record<
     bg: "bg-gradient-to-br from-[hsl(var(--accent)/0.08)] to-[hsl(var(--spark)/0.05)]",
     iconBg:
       "bg-gradient-to-br from-[hsl(var(--accent)/0.25)] to-[hsl(var(--spark)/0.15)]",
+    iconColor: "text-[hsl(var(--accent))]",
   },
   business: {
-    icon: <Rocket className="w-6 h-6" />,
+    icon: <Rocket className="w-5 h-5" />,
     gradient: "from-amber-400 to-orange-500",
     glowColor: "shadow-amber-500/20",
     tagline: "For teams & agencies at scale",
     bg: "bg-gradient-to-br from-amber-500/5 to-orange-500/5",
     iconBg: "bg-gradient-to-br from-amber-500/20 to-orange-500/20",
+    iconColor: "text-amber-400",
   },
 };
 
@@ -144,7 +148,7 @@ export default function UpgradePage() {
       )}
 
       {/* ---- Pricing Cards ---- */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto px-1">
+      <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto px-1 pt-4">
         {(["free", "pro", "business"] as PlanId[]).map((planId, idx) => {
           const plan = PLANS[planId];
           const meta = PLAN_META[planId];
@@ -157,10 +161,10 @@ export default function UpgradePage() {
               className="relative group"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
-              {/* Popular badge */}
+              {/* Popular badge — placed OUTSIDE overflow-hidden card */}
               {isPopular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                  <div className="flex items-center gap-1.5 px-4 py-1 rounded-full text-[11px] font-bold tracking-wider bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--spark))] text-white shadow-lg shadow-[hsl(var(--accent-glow)/0.3)]">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
+                  <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--spark))] text-white shadow-lg shadow-[hsl(var(--accent-glow)/0.3)] whitespace-nowrap">
                     <Star className="w-3 h-3 fill-current" />
                     {meta.badge}
                   </div>
@@ -169,12 +173,12 @@ export default function UpgradePage() {
 
               {/* Card */}
               <div
-                className={`relative h-full rounded-2xl border overflow-hidden transition-all duration-500
+                className={`relative h-full rounded-2xl border transition-all duration-500
                   ${
                     isPopular
                       ? "border-[hsl(var(--accent)/0.4)] shadow-xl " +
                         meta.glowColor +
-                        " scale-[1.02] z-10"
+                        " md:scale-[1.03] z-10"
                       : "border-[hsl(var(--border))] hover:border-[hsl(var(--border-hover)/0.4)] shadow-lg shadow-black/10"
                   }
                   ${meta.bg}
@@ -183,20 +187,16 @@ export default function UpgradePage() {
               >
                 {/* Top accent bar */}
                 <div
-                  className={`h-1 w-full bg-gradient-to-r ${meta.gradient}`}
+                  className={`h-1 w-full bg-gradient-to-r ${meta.gradient} rounded-t-2xl`}
                 />
 
                 <div className="p-7">
                   {/* Plan icon + name */}
                   <div className="flex items-center gap-3 mb-4">
                     <div
-                      className={`w-11 h-11 rounded-xl ${meta.iconBg} flex items-center justify-center`}
+                      className={`w-11 h-11 rounded-xl ${meta.iconBg} flex items-center justify-center ${meta.iconColor}`}
                     >
-                      <div
-                        className={`bg-gradient-to-r ${meta.gradient} bg-clip-text text-transparent`}
-                      >
-                        {meta.icon}
-                      </div>
+                      {meta.icon}
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-text-primary font-display">
