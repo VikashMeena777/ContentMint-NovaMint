@@ -50,19 +50,34 @@ export async function POST(req: NextRequest) {
       }
 
       // Update order status
-      await supabase
+      const { error: orderErr } = await supabase
         .from("orders")
         .update({ status: "paid" })
         .eq("cashfree_order_id", orderId);
 
+      if (orderErr) {
+        console.error("❌ Failed to update order status:", orderErr);
+      }
+
       // Upgrade user plan
-      await supabase
+      const { error: profileErr } = await supabase
         .from("profiles")
         .update({
           plan: order.plan,
           updated_at: new Date().toISOString(),
         })
         .eq("id", order.user_id);
+
+      if (profileErr) {
+        console.error(
+          `❌ Failed to upgrade plan for user ${order.user_id}:`,
+          profileErr
+        );
+        return NextResponse.json(
+          { error: "Plan upgrade failed" },
+          { status: 500 }
+        );
+      }
 
       console.log(
         `✅ Payment success: user ${order.user_id} upgraded to ${order.plan}`

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
@@ -110,9 +111,13 @@ export default function LoginPage() {
           href="/"
           className="flex items-center justify-center gap-2 mb-10"
         >
-          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-[0_0_20px_hsl(var(--accent-glow)/0.3)]">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
+          <Image
+            src="/ContentMint Logo.jpg"
+            alt="ContentMint"
+            width={44}
+            height={44}
+            className="rounded-xl shadow-[0_0_20px_hsl(var(--accent-glow)/0.3)]"
+          />
           <span className="text-2xl font-bold text-text-primary font-display">
             ContentMint
           </span>

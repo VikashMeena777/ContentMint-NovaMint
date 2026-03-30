@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Mail, MessageSquare, Send } from "lucide-react";
+import Image from "next/image";
+import { Mail, MessageSquare, Send } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactPage() {
@@ -17,13 +18,24 @@ export default function ContactPage() {
       <nav className="sticky top-0 z-50 glass-card-static border-b border-[hsl(var(--border))]">
         <div className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--spark)/0.7)] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <Image
+              src="/ContentMint Logo.jpg"
+              alt="ContentMint"
+              width={36}
+              height={36}
+              className="rounded-lg"
+            />
             <span className="text-lg font-bold text-text-primary font-display tracking-tight">
               ContentMint
             </span>
           </Link>
+          <div className="hidden sm:flex items-center gap-6">
+            <Link href="/about" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">About</Link>
+            <Link href="/contact" className="text-sm font-medium text-accent">Contact</Link>
+            <Link href="/terms-of-service" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Terms</Link>
+            <Link href="/privacy-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Privacy</Link>
+            <Link href="/cookie-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Cookies</Link>
+          </div>
           <Link href="/login" className="btn-primary text-sm">
             Get Started Free
           </Link>
@@ -40,7 +52,7 @@ export default function ContactPage() {
         </p>
 
         {submitted ? (
-          <div className="glass-card-featured p-8 text-center">
+          <div className="glass-card-featured p-10 text-center">
             <div className="w-14 h-14 rounded-full bg-[hsl(var(--success)/0.15)] flex items-center justify-center mx-auto mb-4">
               <Send className="w-6 h-6 text-[hsl(var(--success))]" />
             </div>
@@ -54,9 +66,9 @@ export default function ContactPage() {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="glass-card p-8 space-y-6"
+            className="glass-card p-10 space-y-8"
           >
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
                   Name
@@ -109,16 +121,16 @@ export default function ContactPage() {
           </form>
         )}
 
-        <div className="mt-12 grid sm:grid-cols-2 gap-6">
-          <div className="glass-card p-6 text-center">
+        <div className="mt-14 grid sm:grid-cols-2 gap-6">
+          <div className="glass-card p-8 text-center">
             <Mail className="w-6 h-6 text-accent mx-auto mb-3" />
             <h3 className="font-semibold text-text-primary mb-1">Email</h3>
-            <p className="text-text-secondary text-sm">hello@contentmint.ai</p>
+            <p className="text-text-secondary text-sm">ContentMintApp@gamil.com</p>
           </div>
-          <div className="glass-card p-6 text-center">
+          <div className="glass-card p-8 text-center">
             <MessageSquare className="w-6 h-6 text-spark mx-auto mb-3" />
             <h3 className="font-semibold text-text-primary mb-1">Social</h3>
-            <p className="text-text-secondary text-sm">@contentmint on X</p>
+            <p className="text-text-secondary text-sm">@contentmint on IG</p>
           </div>
         </div>
       </main>

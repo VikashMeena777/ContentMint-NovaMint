@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getGroqClient, GROQ_MODEL } from "@/lib/groq/client";
 import { buildPrompt } from "@/lib/prompts";
-import { PLAN_LIMITS } from "@/lib/plan-limits";
+import { PLAN_LIMITS, getPlanConfig } from "@/lib/plan-limits";
 import type { ContentType, Platform, Tone } from "@/types";
 
 const VALID_TYPES: ContentType[] = ["hook", "caption", "cta", "title", "idea"];
@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
       .single();
 
     const plan = profile?.plan || "free";
-    const dailyLimit = PLAN_LIMITS[plan] || 10;
+    const planConfig = getPlanConfig(plan);
+    const dailyLimit = planConfig.dailyLimit;
 
     const today = new Date().toISOString().split("T")[0];
     const { data: usageRow } = await supabase
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
       format,
     });
 
-    // Call Groq API
+    // Call Groq API — priority generation for paid plans
     const groq = getGroqClient();
     const chatCompletion = await groq.chat.completions.create({
       messages: [
@@ -92,8 +93,8 @@ export async function POST(request: NextRequest) {
         { role: "user", content: userPrompt },
       ],
       model: GROQ_MODEL,
-      temperature: 0.8,
-      max_tokens: 2048,
+      temperature: planConfig.priorityGeneration ? 0.7 : 0.8,
+      max_tokens: planConfig.priorityGeneration ? 3072 : 2048,
       response_format: { type: "json_object" },
     });
 

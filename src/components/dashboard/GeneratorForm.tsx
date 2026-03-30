@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Sparkles,
   Copy,
@@ -8,6 +8,7 @@ import {
   Star,
   Loader2,
   RefreshCw,
+  Lock,
 } from "lucide-react";
 import type { ContentType, GenerationResult, Tone, Platform } from "@/types";
 import { PLATFORM_OPTIONS, TONE_OPTIONS } from "@/types";
@@ -59,6 +60,23 @@ export default function GeneratorForm({
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [favIdx, setFavIdx] = useState<Set<number>>(new Set());
   const resultsRef = useRef<HTMLDivElement>(null);
+  const [toneCount, setToneCount] = useState<number>(3); // default to free
+
+  // Fetch user plan to determine tone limits
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/profile");
+        if (res.ok) {
+          const data = await res.json();
+          const plan = data.plan || "free";
+          // Map plan to tone count
+          const counts: Record<string, number> = { free: 3, pro: 10, business: 10 };
+          setToneCount(counts[plan] || 3);
+        }
+      } catch { /* keep default */ }
+    })();
+  }, []);
 
   const handleGenerate = async () => {
     if (!topic.trim()) return;
@@ -202,9 +220,13 @@ export default function GeneratorForm({
                 onChange={(e) => setTone(e.target.value as Tone)}
                 className="w-full bg-elevated border border-border rounded-xl px-4 py-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all appearance-none"
               >
-                {TONE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                {TONE_OPTIONS.map((opt, i) => (
+                  <option
+                    key={opt.value}
+                    value={opt.value}
+                    disabled={i >= toneCount}
+                  >
+                    {opt.label}{i >= toneCount ? " 🔒 Pro" : ""}
                   </option>
                 ))}
               </select>

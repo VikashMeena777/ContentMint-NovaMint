@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getPlanConfig } from "@/lib/plan-limits";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -11,6 +12,16 @@ export async function GET(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Get user plan for history retention
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+
+  const plan = profile?.plan || "free";
+  const config = getPlanConfig(plan);
 
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1");
@@ -27,6 +38,13 @@ export async function GET(request: NextRequest) {
 
   if (favoritesOnly) {
     query = query.eq("is_favorite", true);
+  }
+
+  // Apply history retention filter (but never filter favorites)
+  if (config.historyDays > 0 && !favoritesOnly) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - config.historyDays);
+    query = query.gte("created_at", cutoff.toISOString());
   }
 
   const { data, count, error } = await query;

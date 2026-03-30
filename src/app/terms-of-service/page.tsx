@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import Image from "next/image";
 
 export const metadata = {
   title: "Terms of Service — ContentMint",
@@ -12,13 +12,24 @@ export default function TermsOfServicePage() {
       <nav className="sticky top-0 z-50 glass-card-static border-b border-[hsl(var(--border))]">
         <div className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--spark)/0.7)] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <Image
+              src="/ContentMint Logo.jpg"
+              alt="ContentMint"
+              width={36}
+              height={36}
+              className="rounded-lg"
+            />
             <span className="text-lg font-bold text-text-primary font-display tracking-tight">
               ContentMint
             </span>
           </Link>
+          <div className="hidden sm:flex items-center gap-6">
+            <Link href="/about" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">About</Link>
+            <Link href="/contact" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Contact</Link>
+            <Link href="/terms-of-service" className="text-sm font-medium text-accent">Terms</Link>
+            <Link href="/privacy-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Privacy</Link>
+            <Link href="/cookie-policy" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Cookies</Link>
+          </div>
           <Link href="/login" className="btn-primary text-sm">
             Get Started Free
           </Link>

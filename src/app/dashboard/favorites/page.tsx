@@ -6,14 +6,19 @@ import {
   Check,
   Loader2,
   Trash2,
+  Download,
+  ChevronDown,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Generation } from "@/types";
 
 export default function FavoritesPage() {
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showExport, setShowExport] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const fetchFavorites = async () => {
     setLoading(true);
@@ -55,19 +60,89 @@ export default function FavoritesPage() {
     idea: "💡 Idea",
   };
 
+  const handleExport = async (format: "csv" | "txt") => {
+    setExporting(true);
+    setShowExport(false);
+    try {
+      const res = await fetch(`/api/export?format=${format}&scope=favorites`);
+      if (res.status === 403) {
+        alert("Export is available on Pro and Business plans. Upgrade to unlock!");
+        return;
+      }
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `contentmint-favorites.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      console.error("Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setShowExport(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
-          <Star className="w-5 h-5 text-warning" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
+            <Star className="w-5 h-5 text-warning" />
+          </div>
+          <div>
+            <h1 className="font-display font-bold text-2xl text-text-primary">
+              Favorites
+            </h1>
+            <p className="text-text-secondary text-sm">
+              Your saved content, quickly accessible.
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-display font-bold text-2xl text-text-primary">
-            Favorites
-          </h1>
-          <p className="text-text-secondary text-sm">
-            Your saved content, quickly accessible.
-          </p>
+
+        {/* Export dropdown */}
+        <div className="relative" ref={exportRef}>
+          <button
+            onClick={() => setShowExport(!showExport)}
+            disabled={exporting}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-elevated hover:bg-hover border border-border transition-colors text-text-secondary"
+          >
+            {exporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            Export
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {showExport && (
+            <div className="absolute right-0 mt-2 w-36 bg-elevated border border-border rounded-xl shadow-lg z-10 overflow-hidden">
+              <button
+                onClick={() => handleExport("csv")}
+                className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-hover transition-colors"
+              >
+                Download CSV
+              </button>
+              <button
+                onClick={() => handleExport("txt")}
+                className="w-full text-left px-4 py-2.5 text-sm text-text-primary hover:bg-hover transition-colors"
+              >
+                Download TXT
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
