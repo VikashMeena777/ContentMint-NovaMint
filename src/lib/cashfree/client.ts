@@ -105,30 +105,41 @@ export async function getCashfreeOrderStatus(
 
 /**
  * Verify Cashfree webhook signature
- * Uses HMAC-SHA256 with the secret key
+ * Uses HMAC-SHA256 with the WEBHOOK SECRET (separate from API secret)
+ * NEVER skip verification — not even in sandbox mode
  */
 export function verifyCashfreeWebhook(
   rawBody: string,
+  timestamp: string,
   signature: string
 ): boolean {
-  // In production, verify using crypto HMAC
-  // For sandbox, Cashfree may not always send valid signatures
-  if (process.env.CASHFREE_ENV !== "production") {
-    return true; // Skip verification in sandbox
-  }
-
   try {
     const crypto = require("crypto");
-    const secretKey = process.env.CASHFREE_SECRET_KEY;
-    if (!secretKey) return false;
+    const webhookSecret = process.env.CASHFREE_WEBHOOK_SECRET;
 
+    if (!webhookSecret) {
+      console.error("CRITICAL: CASHFREE_WEBHOOK_SECRET not configured — rejecting webhook");
+      return false;
+    }
+
+    if (!signature) {
+      console.error("CRITICAL: No signature header in webhook request — possible forged request");
+      return false;
+    }
+
+    const payload = timestamp + rawBody;
     const expectedSignature = crypto
-      .createHmac("sha256", secretKey)
-      .update(rawBody)
+      .createHmac("sha256", webhookSecret)
+      .update(payload)
       .digest("base64");
 
-    return signature === expectedSignature;
-  } catch {
+    // Use timing-safe comparison to prevent timing attacks
+    const sigBuf = Buffer.from(signature);
+    const expectedBuf = Buffer.from(expectedSignature);
+    if (sigBuf.length !== expectedBuf.length) return false;
+    return crypto.timingSafeEqual(sigBuf, expectedBuf);
+  } catch (err) {
+    console.error("Webhook signature verification error:", err);
     return false;
   }
 }

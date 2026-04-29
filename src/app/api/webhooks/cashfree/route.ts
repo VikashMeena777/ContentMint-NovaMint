@@ -12,10 +12,11 @@ function getAdminClient() {
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
+    const timestamp = req.headers.get("x-webhook-timestamp") || "";
     const signature = req.headers.get("x-webhook-signature") || "";
 
-    // Verify webhook signature
-    if (!verifyCashfreeWebhook(rawBody, signature)) {
+    // Verify webhook signature — NEVER skip, even in sandbox
+    if (!verifyCashfreeWebhook(rawBody, timestamp, signature)) {
       return NextResponse.json(
         { error: "Invalid signature" },
         { status: 401 }
@@ -97,9 +98,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Webhook error:", err);
+    // Always return 200 to prevent Cashfree retry storms on persistent errors
     return NextResponse.json(
-      { error: "Webhook processing failed" },
-      { status: 500 }
+      { message: "Error processed" },
+      { status: 200 }
     );
   }
 }
